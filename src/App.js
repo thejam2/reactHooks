@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./styles.css";
 
+//useInput
 const useInput = (initialValue, validator) => {
   // validator 추가
   const [value, setValue] = useState(initialValue);
@@ -20,6 +21,7 @@ const useInput = (initialValue, validator) => {
   return { value, onChange };
 };
 
+//useTabs
 const content = [
   {
     tab: "Section 1",
@@ -31,6 +33,7 @@ const content = [
   }
 ];
 
+//useTabs
 const useTabs = (initialTab, allTabs) => {
   const [currentIndex, setCurrentIndex] = useState(initialTab); // useState에 initialTab을 초기값으로 세팅 
   return {
@@ -39,15 +42,35 @@ const useTabs = (initialTab, allTabs) => {
   };
 };
 
+//useTitle
+const useTitle = iniitialTitle => {
+  const [title, setTitle] = useState(iniitialTitle);
+  const updateTitle = () => {
+    const htmlTitle = document.querySelector("title");
+    htmlTitle.innerText = title;
+  };
+  useEffect(updateTitle, [title]);
+  return setTitle;
+};
+
 export default function App() {
+  //
   const [item, setItem] = useState(1);
   const incrementItem = () => setItem(item + 1);
   const decrementItem = () => setItem(item - 1);
 
+  //useInput
   const maxLen = (value) => value.length < 10; // maxLen 함수 선언
   const name = useInput("test", maxLen); // maxLen을 args로 전달
   
+  //useTabs
   const { currentItem, changeItem } = useTabs(0, content);
+  
+  //useTitle
+  const titleUpdater = useTitle("My React App...");
+  setTimeout(() => { // 3초후 titleUpdater 실행
+    titleUpdater("home");
+  }, 3000);
   
   return (
     <div className="App">

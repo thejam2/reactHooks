@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect, useRef } from "react";
 import "./styles.css";
 
 //useInput
@@ -53,6 +53,25 @@ const useTitle = iniitialTitle => {
   return setTitle;
 };
 
+
+//useClick
+const useClick = onClick => {
+  const element = useRef();
+  useEffect(() => {
+    if (typeof onClick === "function") { // componentDidMount, componentDidUpdate 일 때 실행하는 부분
+      if (element.current) {
+        element.current.addEventListener("click", onClick);
+      }
+    }
+    return () => { // componentWillUnmount 일 때 실행하는 부분
+      if (element.current) {
+        element.current.removeEventListener("click", onClick);
+      }
+    };
+  }, []);
+  return element;
+};
+
 export default function App() {
   //
   const [item, setItem] = useState(1);
@@ -72,6 +91,10 @@ export default function App() {
     titleUpdater("home");
   }, 3000);
   
+  //useCLick
+  const sayHello = () => console.log("sayHello");
+  const h1Element = useClick(sayHello);
+  
   return (
     <div className="App">
       <h1>Hello {item}</h1>
@@ -85,6 +108,8 @@ export default function App() {
         <button onClick={() => changeItem(index)}>{section.tab}</button>
       ))}
       <div>{currentItem.content}</div>
+      <hr/>
+      <h1 ref={h1Element}>Hi</h1>
       <hr/>
     </div>
   );

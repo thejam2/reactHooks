@@ -109,20 +109,38 @@ const usePreventLeave = () => {
 };
 
 //useBeforeLeave
-const useBeforeLeave = onBefore => {
+const useBeforeLeave = (onBefore) => {
   if (typeof onBefore !== "function") {
     return;
   }
-  const handle = event => {
+  const handle = (event) => {
     const { clientY } = event; // event : MouseEvent의 객체
-    if (clientY <= 0) { // clientY(마우스의 좌표값)가 0 이하
+    if (clientY <= 0) {
+      // clientY(마우스의 좌표값)가 0 이하
       onBefore();
     }
   };
-  useEffect(() => { 
+  useEffect(() => {
     document.addEventListener("mouseleave", handle); // 컴포넌트가 mount 되면, mouseleave 이벤트 생성
     return () => document.removeEventListener("mouseleave", handle); // 컴포넌트가 unmount 되면, mouseleave 이벤트 제거
   }, []); // 이벤트가 document에 추가 되는 것을 막음(한번만 실행)
+};
+
+//useFadeIn
+const usefadeIn = (duration = 1, delay = 0) => {
+  if (typeof duration !== "number" || typeof delay !== "number") {
+    return;
+  }
+  const element = useRef();
+  useEffect(() => {
+    // element 안으로 들어가기 위해서 useEffect 사용
+    if (element.current) {
+      const { current } = element;
+      current.style.transition = `opacity ${duration}s ease-in-out ${delay}s`;
+      current.style.opacity = 1;
+    }
+  }, []);
+  return { ref: element, style: { opacity: 0 } };
 };
 
 export default function App() {
@@ -156,10 +174,14 @@ export default function App() {
 
   //usePreventLeave
   const { enablePrevent, disablePrevent } = usePreventLeave();
-  
+
   //useBeforeLeave
   const dontLeave = () => console.log("Pls dont leave");
   useBeforeLeave(dontLeave);
+
+  //useFadeIn
+  const fadeInH1 = usefadeIn(1);
+  const fadeInP = usefadeIn(1, 0.5); // delay 옵션 추가
 
   return (
     <div className="App">
@@ -181,6 +203,12 @@ export default function App() {
       <hr />
       <button onClick={enablePrevent}>Protect</button>
       <button onClick={disablePrevent}>Unprotect</button>
+      <hr />
+      <div className="App">
+        <h1 {...fadeInH1}> Hello </h1>
+        <p {...fadeInP}>Welcome</p>
+      </div>
+      <hr />
     </div>
   );
 }
